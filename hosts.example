@@ -1,0 +1,2 @@
+[servers]
+mymachine.example.com ansible_host=my.ip.addr.here ansible_user=root ansible_python_interpreter=/usr/bin/python3

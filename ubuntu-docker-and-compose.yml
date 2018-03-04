@@ -1,0 +1,81 @@
+---
+- name: Install Docker + Docker Compose in Ubuntu
+  hosts: servers
+  become: true
+
+  tasks:
+  - name: Update currently installed applications
+    apt:
+      upgrade: safe
+      update_cache: yes
+      force_apt_get: true
+
+  - name: Ensure fail2ban and ufw are installed
+    apt: name={{ item }} state=present
+    with_items:
+      - fail2ban
+      - ufw
+
+  - name: Clean ufw rules
+    ufw:
+      state: reset
+
+  - name: Disable incoming connections
+    ufw:
+      direction: incoming
+      policy: reject
+      insert: true
+
+  - name: Enable all outgoing connections
+    ufw:
+      direction: outgoing
+      policy: allow
+      insert: true
+
+  - name: Enable incoming connections for 22 (ssh), 80 and 443 (http/s)
+    ufw: direction=incoming policy=allow port={{ item }} comment="Added by Ansible" insert=true
+    with_items:
+      - 22
+      - 80
+      - 443
+
+  - name: Enable ufw rules
+    ufw: state=enabled
+
+  - name: Add Docker CE apt-key
+    apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+
+  - name: Get lsb_release -cs
+    shell: lsb_release -cs
+    register: lsb_release_cs
+
+  - name: Add Docker CE apt repository
+    apt_repository:
+      repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ lsb_release_cs.stdout }} stable
+      state: present
+      update_cache: true
+
+  - name: Install Docker and Dependencies
+    apt: name={{ item }} state=present
+    with_items:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+      - docker-ce
+
+  - name: Get uname -s
+    shell: uname -s
+    register: uname_s
+
+  - name: Get uname -m
+    shell: uname -m
+    register: uname_m
+
+  - name: Download Docker Compose
+    get_url:
+      url: https://github.com/docker/compose/releases/download/1.18.0/docker-compose-{{ uname_s.stdout }}-{{ uname_m.stdout }}
+      dest: /usr/local/bin/docker-compose
+      mode: 0755
