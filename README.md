@@ -54,3 +54,11 @@ ansible-playbook -i hosts ubuntu-docker-and-compose.yml
 Where `-i hosts` uses an Inventory file called `hosts` in the same directory the YAML file
 is. You can additionally pass `--check` to do a dry-run of the playbook actions and see if
 they suit your needs.
+
+## Additionally installed packages
+
+Besides `docker` and `docker-compose`, there are a couple of other packages installed for convenience:
+
+* `ufw` set up to deny incoming, allow outgoing and allow incoming on 22, 80 and 443
+* `fail2ban` with the default configuration, it'll at least leave those hackers out
+* `curl` so you can do those juicy `curl` downloads

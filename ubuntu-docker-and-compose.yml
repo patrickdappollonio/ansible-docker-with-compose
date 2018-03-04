@@ -74,7 +74,7 @@
     shell: uname -m
     register: uname_m
 
-  - name: Download Docker Compose
+  - name: Download and install Docker Compose
     get_url:
       url: https://github.com/docker/compose/releases/download/1.18.0/docker-compose-{{ uname_s.stdout }}-{{ uname_m.stdout }}
       dest: /usr/local/bin/docker-compose
