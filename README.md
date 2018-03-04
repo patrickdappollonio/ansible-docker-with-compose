@@ -1,4 +1,4 @@
-# Install Docker and Docker Compose in an Ubuntu machine
+# Install Docker + Docker Compose in Ubuntu
 
 ## Machine prerequisites:
 
